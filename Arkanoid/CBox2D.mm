@@ -19,10 +19,6 @@ const int NUM_VEL_ITERATIONS = 10;
 const int NUM_POS_ITERATIONS = 3;
 
 
-// Uncomment this lines to use the HelloWorld example
-//#define USE_HELLO_WORLD
-
-
 #pragma mark - Box2D contact listener class
 
 // This C++ class is used to handle collisions
@@ -81,12 +77,6 @@ public:
     // Map to keep track of physics object to communicate with the renderer
     std::map<std::string, struct PhysicsObject *> physicsObjects;
 
-#ifdef USE_HELLO_WORLD
-    b2BodyDef *groundBodyDef;
-    b2Body *groundBody;
-    b2PolygonShape *groundBox;
-#endif
-
     // Logit for this particular "game"
     bool ballHitBrick;  // register that the ball hit the break
     bool ballLaunched;  // register that the user has launched the ball
@@ -106,12 +96,6 @@ public:
         // Initialize Box2D
         gravity = new b2Vec2(0.0f, -10.0f);
         world = new b2World(*gravity);
-        
-#ifdef USE_HELLO_WORLD
-        groundBodyDef = NULL;
-        groundBody = NULL;
-        groundBox = NULL;
-#endif
 
         contactListener = new CContactListener();
         world->SetContactListener(contactListener);
@@ -146,10 +130,6 @@ public:
     
     if (gravity) delete gravity;
     if (world) delete world;
-#ifdef USE_HELLO_WORLD
-    if (groundBodyDef) delete groundBodyDef;
-    if (groundBox) delete groundBox;
-#endif
     if (contactListener) delete contactListener;
     
 }
@@ -348,78 +328,6 @@ public:
     totalElapsedTime = 0;
     ballHitBrick = false;
     ballLaunched = false;
-    
-}
-
-
-
-
-
-
-
-
-
--(void)HelloWorld
-{
-    
-#ifdef USE_HELLO_WORLD
-    
-    groundBodyDef = new b2BodyDef;
-    groundBodyDef->position.Set(0.0f, -10.0f);
-    groundBody = world->CreateBody(groundBodyDef);
-    groundBox = new b2PolygonShape;
-    groundBox->SetAsBox(50.0f, 10.0f);
-    
-    groundBody->CreateFixture(groundBox, 0.0f);
-    
-    // Define the dynamic body. We set its position and call the body factory.
-    b2BodyDef bodyDef;
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position.Set(0.0f, 4.0f);
-    b2Body* body = world->CreateBody(&bodyDef);
-    
-    // Define another box shape for our dynamic body.
-    b2PolygonShape dynamicBox;
-    dynamicBox.SetAsBox(1.0f, 1.0f);
-    
-    // Define the dynamic body fixture.
-    b2FixtureDef fixtureDef;
-    fixtureDef.shape = &dynamicBox;
-    
-    // Set the box density to be non-zero, so it will be dynamic.
-    fixtureDef.density = 1.0f;
-    
-    // Override the default friction.
-    fixtureDef.friction = 0.3f;
-    
-    // Add the shape to the body.
-    body->CreateFixture(&fixtureDef);
-    
-    // Prepare for simulation. Typically we use a time step of 1/60 of a
-    // second (60Hz) and 10 iterations. This provides a high quality simulation
-    // in most game scenarios.
-    float32 timeStep = 1.0f / 60.0f;
-    int32 velocityIterations = 6;
-    int32 positionIterations = 2;
-    
-    // This is our little game loop.
-    world->SetGravity(b2Vec2(0, -10.0f));
-    for (int32 i = 0; i < 60; ++i)
-    {
-        
-        // Instruct the world to perform a single step of simulation.
-        // It is generally best to keep the time step and iterations fixed.
-        world->Step(timeStep, velocityIterations, positionIterations);
-        
-        // Now print the position and angle of the body.
-        b2Vec2 position = body->GetPosition();
-        float32 angle = body->GetAngle();
-        
-        printf("%4.2f %4.2f %4.2f\n", position.x, position.y, angle);
-        
-    }
-    
-#endif
     
 }
 

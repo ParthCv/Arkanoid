@@ -49,9 +49,6 @@ struct PhysicsObject {
 
 // Wrapper class
 @interface CBox2D : NSObject
-
--(void) HelloWorld; // Basic Hello World! example from Box2D
-
 -(void) LaunchBall;                                                         // launch the ball
 -(void) Update:(float)elapsedTime;                                          // update the Box2D engine
 -(void) RegisterHit;                                                        // Register when the ball hits the brick
