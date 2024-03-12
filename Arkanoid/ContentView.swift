@@ -6,16 +6,20 @@
 //
 
 import SwiftUI
+import SceneKit
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        let scene = Arkanoid()
+        SceneView(scene: scene, pointOfView: scene.cameraNode)
+            .onTapGesture {
+                
+            }
+            .gesture(
+                DragGesture().onChanged({ gesture in
+                    scene.handlePaddleMovement(offset: gesture.translation)
+                })
+            )
     }
 }
 
