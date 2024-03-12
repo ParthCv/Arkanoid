@@ -8,6 +8,7 @@
 var ball = 1
 
 import SceneKit
+import SwiftUI
 
 class Arkanoid: SCNScene {
     
@@ -42,11 +43,12 @@ class Arkanoid: SCNScene {
             brickNodes.append(row)
         }
         
-        createBallNode()
-        createCamera()
         box2DWrapper = CBox2D()
+        createCamera()
+        createWalls()
         createBricks()
         createPaddle()
+        createBallNode()
         
         let gameLoop = CADisplayLink(target: self, selector: #selector(update))
         gameLoop.preferredFrameRateRange = CAFrameRateRange(minimum: 120.0, maximum: 120.0, preferred: 120.0)
@@ -78,6 +80,7 @@ class Arkanoid: SCNScene {
         ballNode.position = SCNVector3Make(Float(BALL_POS_X),
                                            Float(BALL_POS_Y),
                                            0)
+        // Make Physicsbody
         rootNode.addChildNode(ballNode)
     }
     
@@ -87,6 +90,7 @@ class Arkanoid: SCNScene {
         paddleMat.diffuse.contents = UIColor.gray
         paddleGeo.materials = [paddleMat]
         
+        // Make Physicsbody
         paddleNode = SCNNode(geometry: paddleGeo)
         self.rootNode.addChildNode(paddleNode)
     }
@@ -100,13 +104,12 @@ class Arkanoid: SCNScene {
         for row in 0..<BRICK_ROWS {
             for col in 0..<BRICK_COLS {
                 let brickNode = SCNNode(geometry: brickGeo)
-                
                 brickNode.position = SCNVector3(
                     Float(col) * (BRICK_WIDTH + BRICK_SPACING) + Float(BRICK_POS_X),
                     Float(row) * (BRICK_HEIGHT + BRICK_SPACING) + Float(BRICK_POS_Y),
                     0
                 )
-                
+                // Make Physicsbody
                 self.rootNode.addChildNode(brickNode)
                 
                 brickNodes[Int(row)][Int(col)] = brickNode
@@ -115,10 +118,31 @@ class Arkanoid: SCNScene {
         }
     }
     
+    func createWalls(){
+        let wallGeo = SCNBox(width: 1.0, height:200.0, length: 0.1, chamferRadius: 0.0)
+        let wallMat = SCNMaterial()
+        wallMat.diffuse.contents = UIColor.brown
+        wallGeo.materials = [wallMat]
+        
+        let wallLeft = SCNNode(geometry: wallGeo)
+        let wallRight = SCNNode(geometry: wallGeo)
+        let wallTop = SCNNode(geometry: wallGeo)
+        
+        wallLeft.position = SCNVector3(-30, 100,0)
+        wallRight.position = SCNVector3(30, 100,0)
+        wallTop.position = SCNVector3(-30, 100,0)
+        wallTop.eulerAngles = SCNVector3(0,0,Float.pi/2)
+        // Make Physicsbody
+        
+        self.rootNode.addChildNode(wallLeft)
+        self.rootNode.addChildNode(wallRight)
+        self.rootNode.addChildNode(wallTop)
+    }
+    
     @MainActor
     func handlePaddleMovement(offset: CGSize) {
         let paddlePosX = paddleNode.position.x
-        paddleNode.position.x = paddlePosX + Float(offset.height)/10
+        paddleNode.position.x = paddlePosX + Float(offset.width)/100
         print("paddle pos - ", paddleNode.position)
     }
 

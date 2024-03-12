@@ -94,26 +94,31 @@ public:
     if (self) {
         
         // Initialize Box2D
-        gravity = new b2Vec2(0.0f, -10.0f);
+        gravity = new b2Vec2(0.0f, 0.0f);
         world = new b2World(*gravity);
 
         contactListener = new CContactListener();
         world->SetContactListener(contactListener);
         
         // Set up the brick and ball objects for Box2D
+        //TODO: Extract brick physics setup into own function
         struct PhysicsObject *newObj = new struct PhysicsObject;
-        newObj->loc.x = BRICK_POS_X;
-        newObj->loc.y = BRICK_POS_Y;
-        newObj->objType = ObjTypeBox;
+//        newObj->loc.x = BRICK_POS_X;
+//        newObj->loc.y = BRICK_POS_Y;
+//        newObj->objType = ObjTypeBox;
         char *objName = strdup("Brick");
-        [self AddObject:objName newObject:newObj];
+//        [self AddObject:objName newObject:newObj];
         
+        // TODO: Extract ball physics setup into own function
         newObj = new struct PhysicsObject;
         newObj->loc.x = BALL_POS_X;
         newObj->loc.y = BALL_POS_Y;
         newObj->objType = ObjTypeCircle;
         objName = strdup("Ball");
         [self AddObject:objName newObject:newObj];
+        
+        //TODO: Extract paddle physics setup into own function
+        // TODO: Extract wall physics setup into own function
         
         totalElapsedTime = 0;
         ballHitBrick = false;
@@ -157,9 +162,9 @@ public:
     
     // Check if it is time yet to drop the brick, and if so call SetAwake()
     totalElapsedTime += elapsedTime;
-    if ((totalElapsedTime > BRICK_WAIT) && theBrick && theBrick->b2ShapePtr) {
-        ((b2Body *)theBrick->b2ShapePtr)->SetAwake(true);
-    }
+//    if ((totalElapsedTime > BRICK_WAIT) && theBrick && theBrick->b2ShapePtr) {
+//        ((b2Body *)theBrick->b2ShapePtr)->SetAwake(true);
+//    }
     
     // Use these lines for debugging the brick and ball positions
     //    if (theBrick)
@@ -178,11 +183,11 @@ public:
     if (ballHitBrick)
     {
         
-        // Stop the ball and make sure it is not affected by forces
-        ((b2Body *)theBall->b2ShapePtr)->SetLinearVelocity(b2Vec2(0, 0));
-        ((b2Body *)theBall->b2ShapePtr)->SetAngularVelocity(0);
-        ((b2Body *)theBall->b2ShapePtr)->SetAwake(false);
-        ((b2Body *)theBall->b2ShapePtr)->SetActive(false);
+        // TODO: Reflect ball on Wall or Brick
+//        ((b2Body *)theBall->b2ShapePtr)->SetLinearVelocity(b2Vec2(0, 0));
+//        ((b2Body *)theBall->b2ShapePtr)->SetAngularVelocity(0);
+//        ((b2Body *)theBall->b2ShapePtr)->SetAwake(false);
+//        ((b2Body *)theBall->b2ShapePtr)->SetActive(false);
         
         // Destroy the brick from Box2D and related objects in this class
         world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));

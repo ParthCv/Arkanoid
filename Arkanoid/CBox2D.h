@@ -19,7 +19,7 @@
 #define BRICK_ROWS      7
 #define BRICK_COLS      7
 #define BRICK_SPACING  0.50f
-#define BRICK_POS_X         -25
+#define BRICK_POS_X         -25.5
 #define BRICK_POS_Y         80
 #define BRICK_WIDTH         8.0f
 #define BRICK_HEIGHT        2.0f
