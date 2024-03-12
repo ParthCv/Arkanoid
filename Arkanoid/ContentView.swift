@@ -15,6 +15,11 @@ struct ContentView: View {
             .onTapGesture {
                 
             }
+            .gesture(
+                DragGesture().onChanged({ gesture in
+                    scene.handlePaddleMovement(offset: gesture.translation)
+                })
+            )
     }
 }
 
