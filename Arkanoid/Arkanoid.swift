@@ -79,7 +79,6 @@ class Arkanoid: SCNScene {
     func createCamera() {
         let camera = SCNCamera()
         cameraNode.camera = camera
-        
         cameraNode.position = SCNVector3(0, 50, 100)
         cameraNode.eulerAngles = SCNVector3(0, 0, 0)
         rootNode.addChildNode(cameraNode)
@@ -127,11 +126,9 @@ class Arkanoid: SCNScene {
                     Float(row) * (BRICK_HEIGHT + BRICK_SPACING) + Float(BRICK_POS_Y),
                     0
                 )
-                
-                var objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
-                box2DWrapper.createBricks(row, andCol: col, andName: objName)
+                let objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
+                box2DWrapper.createBrick(row, andCol: col, andName: objName)
                 self.rootNode.addChildNode(brickNode)
-                
                 brickNodes[Int(row)][Int(col)] = brickNode
             }
             
@@ -163,8 +160,8 @@ class Arkanoid: SCNScene {
     
     @MainActor
     func handlePaddleMovement(offset: CGSize) {
-        let paddlePosX = paddleNode.position.x
-        box2DWrapper.updatePaddle(Float(offset.width) / 100)
+        let newXPos = Float(offset.width) / 100        
+        box2DWrapper.updatePaddle(newXPos)
     }
 
     

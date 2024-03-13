@@ -38,6 +38,7 @@
 #define WALL_LEFT_POS_X -30.0f
 #define WALL_RIGHT_POX_X 30.0f
 
+
 // You can define other object types here
 typedef enum { ObjTypeBox=0, ObjTypeCircle=1, ObjTypeWall=3 , ObjTypePaddle=4} ObjectType;
 
@@ -70,7 +71,7 @@ struct PhysicsObject {
 -(void)createBallBody;
 -(void)createPaddleBody;
 -(void)createWallBodies;
--(void)createBricks:(int)row andCol:(int)col andName:(char *)name;
+-(void)createBrick:(int)row andCol:(int)col andName:(char *)name;
 
 @end
 
