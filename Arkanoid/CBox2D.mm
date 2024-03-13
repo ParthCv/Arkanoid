@@ -322,7 +322,7 @@ public:
             circle.m_radius = BALL_RADIUS;
             fixtureDef.shape = &circle;
             fixtureDef.density = 1.0f;
-            fixtureDef.friction = 0.3f;
+            fixtureDef.friction = 0.0f;
             fixtureDef.restitution = 1.0f;
             
             break;
@@ -367,23 +367,23 @@ public:
 -(void)Reset
 {
     
-    // Look up the brick, and if it exists, destroy it and delete it
-    struct PhysicsObject *theBrick = physicsObjects["Brick"];
-    if (theBrick) {
-        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
-        delete theBrick;
-        theBrick = nullptr;
-        physicsObjects.erase("Brick");
-    }
-    
-    // Create a new brick object
-    theBrick = new struct PhysicsObject;
-    theBrick->loc.x = BRICK_POS_X;
-    theBrick->loc.y = BRICK_POS_Y;
-    theBrick->objType = ObjTypeBox;
-    char *objName = strdup("Brick");
-    [self AddObject:objName newObject:theBrick isDynamic:false];
-    
+//    // Look up the brick, and if it exists, destroy it and delete it
+//    struct PhysicsObject *theBrick = physicsObjects["Brick"];
+//    if (theBrick) {
+//        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
+//        delete theBrick;
+//        theBrick = nullptr;
+//        physicsObjects.erase("Brick");
+//    }
+//    
+//    // Create a new brick object
+//    theBrick = new struct PhysicsObject;
+//    theBrick->loc.x = BRICK_POS_X;
+//    theBrick->loc.y = BRICK_POS_Y;
+//    theBrick->objType = ObjTypeBox;
+//    char *objName = strdup("Brick");
+//    [self AddObject:objName newObject:theBrick isDynamic:false];
+//    
     // Look up the ball object and re-initialize the position, etc.
     struct PhysicsObject *theBall = physicsObjects["Ball"];
     theBall->loc.x = BALL_POS_X;
@@ -391,12 +391,17 @@ public:
     ((b2Body *)theBall->b2ShapePtr)->SetTransform(b2Vec2(BALL_POS_X, BALL_POS_Y), 0);
     ((b2Body *)theBall->b2ShapePtr)->SetLinearVelocity(b2Vec2(0, 0));
     ((b2Body *)theBall->b2ShapePtr)->SetAngularVelocity(0);
-    ((b2Body *)theBall->b2ShapePtr)->SetAwake(false);
+    ((b2Body *)theBall->b2ShapePtr)->SetAwake(true);
     ((b2Body *)theBall->b2ShapePtr)->SetActive(true);
+    
+    struct PhysicsObject *paddle = physicsObjects["Paddle"];
+    paddle->loc.x = PADDLE_POS_X;
+    paddle->loc.y = PADDLE_POS_Y;
+    ((b2Body *)paddle->b2ShapePtr)->SetTransform(b2Vec2(PADDLE_POS_X, PADDLE_POS_Y), 0);
     
     totalElapsedTime = 0;
     ballHitBrick = false;
-    ballLaunched = false;
+    ballLaunched = true;
     
 }
 

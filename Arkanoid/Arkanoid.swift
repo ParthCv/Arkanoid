@@ -70,6 +70,11 @@ class Arkanoid: SCNScene {
         ballNode.position.x = (ballPos?.pointee.loc.x)!
         ballNode.position.y = (ballPos?.pointee.loc.y)!
         
+        // Check y pos of ball
+        if(ballNode.position.y < KILL_ZONE){
+            resetBall()
+        }
+        
         let paddlePos = UnsafePointer(box2DWrapper.getObject("Paddle"))
         paddleNode.position.x = (paddlePos?.pointee.loc.x)!
         paddleNode.position.y = (paddlePos?.pointee.loc.y)!
@@ -165,5 +170,8 @@ class Arkanoid: SCNScene {
         box2DWrapper.updatePaddle(Float(offset.width) / 100)
     }
 
-    
+    @MainActor
+    func resetBall(){
+        box2DWrapper.reset()
+    }
 }
