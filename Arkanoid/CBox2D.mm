@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <map>
 #include <string>
+#include <math.h>
 
 
 // Some Box2D engine paremeters
@@ -102,32 +103,63 @@ public:
         
         // Set up the brick and ball objects for Box2D
         //TODO: Extract brick physics setup into own function
-        struct PhysicsObject *newObj = new struct PhysicsObject;
+        
 //        newObj->loc.x = BRICK_POS_X;
 //        newObj->loc.y = BRICK_POS_Y;
 //        newObj->objType = ObjTypeBox;
-        char *objName = strdup("Brick");
+
 //        [self AddObject:objName newObject:newObj];
         
-        // TODO: Extract ball physics setup into own function
-        newObj = new struct PhysicsObject;
-        newObj->loc.x = BALL_POS_X;
-        newObj->loc.y = BALL_POS_Y;
-        newObj->objType = ObjTypeCircle;
-        objName = strdup("Ball");
-        [self AddObject:objName newObject:newObj];
+        
+        //self.createBallBody();
         
         //TODO: Extract paddle physics setup into own function
         // TODO: Extract wall physics setup into own function
         
         totalElapsedTime = 0;
         ballHitBrick = false;
-        ballLaunched = false;
+        ballLaunched = true;
         
     }
     
     return self;
     
+}
+
+- (void)createBallBody {
+    struct PhysicsObject *newObj = new struct PhysicsObject;
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = BALL_POS_X;
+    newObj->loc.y = BALL_POS_Y;
+    newObj->objType = ObjTypeCircle;
+    char* objName = strdup("Ball");
+    [self AddObject:objName newObject:newObj];
+}
+
+- (void)createWallBodies {
+    struct PhysicsObject *newObj = new struct PhysicsObject;
+    
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = WALL_LEFT_POS_X;
+    newObj->loc.y = WALL_POS_Y;
+    newObj->objType = ObjTypeWall;
+    char* objName = strdup("Wall_left");
+    [self AddObject:objName newObject:newObj];
+
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = WALL_RIGHT_POX_X;
+    newObj->loc.y = WALL_POS_Y;
+    newObj->objType = ObjTypeWall;
+    objName = strdup("Wall_right");
+    [self AddObject:objName newObject:newObj];
+    
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = WALL_LEFT_POS_X;
+    newObj->loc.y = WALL_POS_Y;
+    newObj->loc.theta = M_PI/2;
+    newObj->objType = ObjTypeWall;
+    objName = strdup("Wall_top");
+    [self AddObject:objName newObject:newObj];
 }
 
 - (void)dealloc
@@ -226,8 +258,9 @@ public:
 
 -(void)RegisterHit
 {
+    //TODO: not registing hit rn
     // Set some flag here for processing later...
-    ballHitBrick = true;
+    ballHitBrick = false;
 }
 
 -(void)LaunchBall
@@ -244,6 +277,7 @@ public:
     b2Body *theObject;
     bodyDef.type = b2_dynamicBody;
     bodyDef.position.Set(newObj->loc.x, newObj->loc.y);
+    bodyDef.angle = newObj->loc.theta;
     theObject = world->CreateBody(&bodyDef);
     if (!theObject) return;
     
@@ -279,8 +313,17 @@ public:
             fixtureDef.density = 1.0f;
             fixtureDef.friction = 0.3f;
             fixtureDef.restitution = 1.0f;
-            theObject->SetGravityScale(0.0f);
             
+            break;
+            
+        case ObjTypeWall:
+            
+            dynamicBox.SetAsBox(WALL_WIDTH/2, WALL_HEIGHT/2);
+            fixtureDef.shape = &dynamicBox;
+            fixtureDef.density = 1.0f;
+            fixtureDef.friction = 0.3f;
+            fixtureDef.restitution = 1.0f;
+                        
             break;
             
         default:
@@ -288,7 +331,7 @@ public:
             break;
             
     }
-    
+    theObject->SetGravityScale(0.0f);
     // Add the new fixture to the Box2D object and add our physics object to our map
     theObject->CreateFixture(&fixtureDef);
     physicsObjects[name] = newObj;

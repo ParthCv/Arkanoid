@@ -5,22 +5,10 @@
 //  Created by Parth Chaturvedi on 2024-03-08.
 //
 
-var ball = 1
-
 import SceneKit
 import SwiftUI
 
 class Arkanoid: SCNScene {
-    
-    //private var box2D: CBox2D!
-    
-//    let b2gravity:b2Vec2 = b2Vec2(0, 0)
-//    
-//    var box2d: b2World?
-//    
-//    var ballBodyDef: b2BodyDef?
-//
-//    var ballBody: OpaquePointer?
 
     var ballNode: SCNNode = SCNNode()
     
@@ -31,6 +19,8 @@ class Arkanoid: SCNScene {
     var paddleNode: SCNNode = SCNNode()
     
     var box2DWrapper: CBox2D!
+    
+    var lastTime = CFTimeInterval(floatLiteral: 0)
         
     override init() {
         super.init()
@@ -59,10 +49,28 @@ class Arkanoid: SCNScene {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @MainActor
     @objc
     private func update(displayLink: CADisplayLink) {
-        
+        if (lastTime != CFTimeInterval(floatLiteral: 0)) {  // if it's the first frame, just update lastTime
+            let elapsedTime = displayLink.targetTimestamp - lastTime    // calculate elapsed time
+            updateGameObjects(elapsedTime: elapsedTime) // update all the game objects
+        }
+        lastTime = displayLink.targetTimestamp
     }
+    
+    @MainActor
+    private func updateGameObjects(elapsedTime: CFTimeInterval) {
+        // Update Box2D physics simulation
+        box2DWrapper.update(Float(elapsedTime))
+        
+        // Get ball position and update ball node
+        let ballPos = UnsafePointer(box2DWrapper.getObject("Ball"))
+    
+        ballNode.position.x = (ballPos?.pointee.loc.x)!
+        ballNode.position.y = (ballPos?.pointee.loc.y)!
+    }
+    
     
     func createCamera() {
         let camera = SCNCamera()
@@ -81,6 +89,7 @@ class Arkanoid: SCNScene {
                                            Float(BALL_POS_Y),
                                            0)
         // Make Physicsbody
+        box2DWrapper.createBallBody()
         rootNode.addChildNode(ballNode)
     }
     
@@ -133,6 +142,8 @@ class Arkanoid: SCNScene {
         wallTop.position = SCNVector3(-30, 100,0)
         wallTop.eulerAngles = SCNVector3(0,0,Float.pi/2)
         // Make Physicsbody
+        
+        box2DWrapper.createWallBodies()
         
         self.rootNode.addChildNode(wallLeft)
         self.rootNode.addChildNode(wallRight)
