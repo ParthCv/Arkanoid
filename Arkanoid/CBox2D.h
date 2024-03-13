@@ -37,6 +37,7 @@
 #define WALL_POS_Y      100.0f
 #define WALL_LEFT_POS_X -30.0f
 #define WALL_RIGHT_POX_X 30.0f
+#define KILL_ZONE       -20.0f
 
 // You can define other object types here
 typedef enum { ObjTypeBox=0, ObjTypeCircle=1, ObjTypeWall=3 , ObjTypePaddle=4} ObjectType;
