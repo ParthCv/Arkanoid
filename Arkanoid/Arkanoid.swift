@@ -93,10 +93,11 @@ class Arkanoid: SCNScene {
         let ballGeo = SCNSphere(radius: CGFloat(BALL_RADIUS))
         ballNode = SCNNode(geometry: ballGeo)
         ballNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
-        ballNode.position = SCNVector3Make(Float(BALL_POS_X),
-                                           Float(BALL_POS_Y),
-                                           0)
-        // Make Physicsbody
+        ballNode.position = SCNVector3Make(
+            Float(BALL_POS_X),
+            Float(BALL_POS_Y),
+            0
+        )
         box2DWrapper.createBallBody()
         rootNode.addChildNode(ballNode)
     }
@@ -106,13 +107,12 @@ class Arkanoid: SCNScene {
         let paddleMat = SCNMaterial()
         paddleMat.diffuse.contents = UIColor.gray
         paddleGeo.materials = [paddleMat]
-        
         paddleNode = SCNNode(geometry: paddleGeo)
-        paddleNode.position = SCNVector3Make(Float(PADDLE_POS_X),
-                                           Float(PADDLE_POS_Y),
-                                           0)
-        
-        // Make Physicsbody
+        paddleNode.position = SCNVector3Make(
+            Float(PADDLE_POS_X),
+            Float(PADDLE_POS_Y),
+            0
+        )
         box2DWrapper.createPaddleBody()
         self.rootNode.addChildNode(paddleNode)
     }
@@ -154,8 +154,7 @@ class Arkanoid: SCNScene {
         wallRight.position = SCNVector3(30, 100,0)
         wallTop.position = SCNVector3(-30, 100,0)
         wallTop.eulerAngles = SCNVector3(0,0,Float.pi/2)
-        // Make Physicsbody
-        
+
         box2DWrapper.createWallBodies()
         
         self.rootNode.addChildNode(wallLeft)

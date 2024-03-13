@@ -93,7 +93,6 @@ public:
     self = [super init];
     
     if (self) {
-        
         // Initialize Box2D
         gravity = new b2Vec2(0.0f, 0.0f);
         world = new b2World(*gravity);
@@ -101,25 +100,9 @@ public:
         contactListener = new CContactListener();
         world->SetContactListener(contactListener);
         
-        // Set up the brick and ball objects for Box2D
-        //TODO: Extract brick physics setup into own function
-        
-//        newObj->loc.x = BRICK_POS_X;
-//        newObj->loc.y = BRICK_POS_Y;
-//        newObj->objType = ObjTypeBox;
-
-//        [self AddObject:objName newObject:newObj];
-        
-        
-        //self.createBallBody();
-        
-        //TODO: Extract paddle physics setup into own function
-        // TODO: Extract wall physics setup into own function
-        
         totalElapsedTime = 0;
         ballHitBrick = false;
         ballLaunched = true;
-        
     }
     
     return self;
@@ -414,9 +397,7 @@ public:
 
 - (void)UpdatePaddle:(const float)pos {
     struct PhysicsObject *paddle = physicsObjects["Paddle"];
-    float oldPos = paddle->loc.x;
-    float newPos = oldPos + pos;
-    float clampedPos = MIN(MAX(newPos, WALL_LEFT_POS_X + PADDLE_WIDTH/2), WALL_RIGHT_POX_X - PADDLE_WIDTH/2);
+    float clampedPos = MIN(MAX(paddle->loc.x + pos, WALL_LEFT_POS_X + PADDLE_WIDTH/2), WALL_RIGHT_POX_X - PADDLE_WIDTH/2);
     ((b2Body *)paddle->b2ShapePtr)->SetTransform(b2Vec2(clampedPos, 0), 0);
 }
 
