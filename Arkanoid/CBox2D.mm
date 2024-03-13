@@ -174,7 +174,7 @@ public:
     [self AddObject:objName newObject:newObj isDynamic:false];
 }
 
-- (void)createBricks:(int)row andCol:(int)col andName:(char *)name {
+- (void)createBrick:(int)row andCol:(int)col andName:(char *)name {
     struct PhysicsObject *newObj = new struct PhysicsObject;
     newObj = new struct PhysicsObject;
     newObj->loc.x = row * (BRICK_WIDTH + BRICK_SPACING) + BRICK_POS_X;
@@ -185,11 +185,9 @@ public:
 
 - (void)dealloc
 {
-    
     if (gravity) delete gravity;
     if (world) delete world;
     if (contactListener) delete contactListener;
-    
 }
 
 -(void)Update:(float)elapsedTime
@@ -417,7 +415,9 @@ public:
 - (void)UpdatePaddle:(const float)pos {
     struct PhysicsObject *paddle = physicsObjects["Paddle"];
     float oldPos = paddle->loc.x;
-    ((b2Body *)paddle->b2ShapePtr)->SetTransform(b2Vec2(oldPos + pos, 0), 0);
+    float newPos = oldPos + pos;
+    float clampedPos = MIN(MAX(newPos, WALL_LEFT_POS_X + PADDLE_WIDTH/2), WALL_RIGHT_POX_X - PADDLE_WIDTH/2);
+    ((b2Body *)paddle->b2ShapePtr)->SetTransform(b2Vec2(clampedPos, 0), 0);
 }
 
 @end
