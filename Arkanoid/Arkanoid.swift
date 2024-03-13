@@ -21,6 +21,10 @@ class Arkanoid: SCNScene {
     var box2DWrapper: CBox2D!
     
     var lastTime = CFTimeInterval(floatLiteral: 0)
+    
+    var score = 0
+    
+    var ballsLeft = 5
         
     override init() {
         super.init()
@@ -72,6 +76,11 @@ class Arkanoid: SCNScene {
         
         // Check y pos of ball
         if(ballNode.position.y < KILL_ZONE){
+            ballsLeft = ballsLeft - 1
+            if ballsLeft == 0 {
+                print("Game Over")
+            }
+            print("Balls Left ", ballsLeft)
             resetBall()
         }
         
@@ -98,6 +107,7 @@ class Arkanoid: SCNScene {
             Float(BALL_POS_Y),
             0
         )
+        ballNode.name = "Ball"
         box2DWrapper.createBallBody()
         rootNode.addChildNode(ballNode)
     }
@@ -113,6 +123,7 @@ class Arkanoid: SCNScene {
             Float(PADDLE_POS_Y),
             0
         )
+        paddleNode.name = "Paddle"
         box2DWrapper.createPaddleBody()
         self.rootNode.addChildNode(paddleNode)
     }
@@ -132,6 +143,7 @@ class Arkanoid: SCNScene {
                     0
                 )
                 let objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
+                brickNode.name = "Brick_\(row)_\(col)"
                 box2DWrapper.createBrick(row, andCol: col, andName: objName)
                 self.rootNode.addChildNode(brickNode)
                 brickNodes[Int(row)][Int(col)] = brickNode
@@ -172,4 +184,5 @@ class Arkanoid: SCNScene {
     func resetBall(){
         box2DWrapper.reset()
     }
+    
 }

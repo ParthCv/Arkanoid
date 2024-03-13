@@ -12,9 +12,9 @@ struct ContentView: View {
     var body: some View {
         let scene = Arkanoid()
         SceneView(scene: scene, pointOfView: scene.cameraNode)
-            .onTapGesture {
-                
-            }
+            .onTapGesture(count: 2, perform: {
+                scene.box2DWrapper.launchBall()
+            })
             .gesture(
                 DragGesture().onChanged({ gesture in
                     scene.handlePaddleMovement(offset: gesture.translation)

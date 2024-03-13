@@ -50,6 +50,7 @@ public:
             // This is needed because this handler may be running in a different thread and this
             //  class does not know about the CBox2D that's running the physics
             struct PhysicsObject *objData = (struct PhysicsObject *)(bodyA->GetUserData());
+            
             CBox2D *parentObj = (__bridge CBox2D *)(objData->box2DObj);
             
             // Call RegisterHit (assume CBox2D object is in user data)
@@ -102,7 +103,7 @@ public:
         
         totalElapsedTime = 0;
         ballHitBrick = false;
-        ballLaunched = true;
+        ballLaunched = false;
     }
     
     return self;
@@ -200,16 +201,13 @@ public:
 //        ((b2Body *)theBrick->b2ShapePtr)->SetAwake(true);
 //    }
     
-    // Use these lines for debugging the brick and ball positions
-    //    if (theBrick)
-    //        printf("Brick: %4.2f %4.2f\t",
-    //               ((b2Body *)theBrick->b2ShapePtr)->GetPosition().x,
-    //               ((b2Body *)theBrick->b2ShapePtr)->GetPosition().y);
-    //    if (theBall &&  theBall->b2ShapePtr)
-    //        printf("Ball: %4.2f %4.2f",
-    //               ((b2Body *)theBall->b2ShapePtr)->GetPosition().x,
-    //               ((b2Body *)theBall->b2ShapePtr)->GetPosition().y);
-    //    printf("\n");
+     
+
+//        if (theBall &&  theBall->b2ShapePtr)
+//            printf("Ball: %4.2f %4.2f",
+//                   ((b2Body *)theBall->b2ShapePtr)->GetPosition().x,
+//                   ((b2Body *)theBall->b2ShapePtr)->GetPosition().y);
+//        printf("\n");
     
     
     
@@ -295,11 +293,12 @@ public:
     b2PolygonShape dynamicBox;
     b2CircleShape circle;
     b2FixtureDef fixtureDef;
+    b2PolygonShape polygon;
+    b2Vec2 verticies[4];
     
     switch (newObj->objType) {
             
         case ObjTypeBox:
-            
             dynamicBox.SetAsBox(BRICK_WIDTH/2, BRICK_HEIGHT/2);
             fixtureDef.shape = &dynamicBox;
             fixtureDef.density = 1.0f;
@@ -329,16 +328,19 @@ public:
             
         case ObjTypePaddle:
             
-            dynamicBox.SetAsBox(PADDLE_WIDTH/2, PADDLE_HEIGHT/2);
-            fixtureDef.shape = &dynamicBox;
+            verticies[0].Set(-PADDLE_WIDTH/2, -PADDLE_HEIGHT/2);
+            verticies[1].Set(PADDLE_WIDTH/2, -PADDLE_HEIGHT/2);
+            verticies[2].Set(-PADDLE_WIDTH/3, PADDLE_HEIGHT/2);
+            verticies[3].Set(PADDLE_WIDTH/3, PADDLE_HEIGHT/2);
+            polygon.Set(verticies, 4);
+            
+            fixtureDef.shape = &polygon;
             fixtureDef.density = 1.0f;
             fixtureDef.friction = 0.3f;
             fixtureDef.restitution = 1.0f;
-                        
             break;
             
         default:
-            
             break;
             
     }
@@ -391,7 +393,7 @@ public:
     
     totalElapsedTime = 0;
     ballHitBrick = false;
-    ballLaunched = true;
+    ballLaunched = false;
     
 }
 
