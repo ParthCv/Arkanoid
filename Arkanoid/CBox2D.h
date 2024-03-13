@@ -68,9 +68,9 @@ struct PhysicsObject {
 -(void) UpdatePaddle:(const float) pos;
 -(void) Reset;                                                              // Reset Box2D
 -(void)createBallBody;
-
 -(void)createPaddleBody;
 -(void)createWallBodies;
+-(void)createBricks:(int)row andCol:(int)col andName:(char *)name;
 
 @end
 

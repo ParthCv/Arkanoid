@@ -127,7 +127,9 @@ class Arkanoid: SCNScene {
                     Float(row) * (BRICK_HEIGHT + BRICK_SPACING) + Float(BRICK_POS_Y),
                     0
                 )
-                // Make Physicsbody
+                
+                var objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
+                box2DWrapper.createBricks(row, andCol: col, andName: objName)
                 self.rootNode.addChildNode(brickNode)
                 
                 brickNodes[Int(row)][Int(col)] = brickNode

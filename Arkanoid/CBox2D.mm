@@ -174,6 +174,15 @@ public:
     [self AddObject:objName newObject:newObj isDynamic:false];
 }
 
+- (void)createBricks:(int)row andCol:(int)col andName:(char *)name {
+    struct PhysicsObject *newObj = new struct PhysicsObject;
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = row * (BRICK_WIDTH + BRICK_SPACING) + BRICK_POS_X;
+    newObj->loc.y = col * (BRICK_HEIGHT + BRICK_SPACING) + BRICK_POS_Y;
+    newObj->objType = ObjTypeBox;
+    [self AddObject:name newObject:newObj isDynamic:false];
+}
+
 - (void)dealloc
 {
     
