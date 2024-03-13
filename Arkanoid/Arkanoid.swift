@@ -69,6 +69,10 @@ class Arkanoid: SCNScene {
     
         ballNode.position.x = (ballPos?.pointee.loc.x)!
         ballNode.position.y = (ballPos?.pointee.loc.y)!
+        
+        let paddlePos = UnsafePointer(box2DWrapper.getObject("Paddle"))
+        paddleNode.position.x = (paddlePos?.pointee.loc.x)!
+        paddleNode.position.y = (paddlePos?.pointee.loc.y)!
     }
     
     
@@ -99,8 +103,13 @@ class Arkanoid: SCNScene {
         paddleMat.diffuse.contents = UIColor.gray
         paddleGeo.materials = [paddleMat]
         
-        // Make Physicsbody
         paddleNode = SCNNode(geometry: paddleGeo)
+        paddleNode.position = SCNVector3Make(Float(PADDLE_POS_X),
+                                           Float(PADDLE_POS_Y),
+                                           0)
+        
+        // Make Physicsbody
+        box2DWrapper.createPaddleBody()
         self.rootNode.addChildNode(paddleNode)
     }
     
@@ -153,8 +162,7 @@ class Arkanoid: SCNScene {
     @MainActor
     func handlePaddleMovement(offset: CGSize) {
         let paddlePosX = paddleNode.position.x
-        paddleNode.position.x = paddlePosX + Float(offset.width)/100
-        print("paddle pos - ", paddleNode.position)
+        box2DWrapper.updatePaddle(Float(offset.width) / 100)
     }
 
     

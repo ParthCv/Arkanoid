@@ -133,7 +133,19 @@ public:
     newObj->loc.y = BALL_POS_Y;
     newObj->objType = ObjTypeCircle;
     char* objName = strdup("Ball");
-    [self AddObject:objName newObject:newObj];
+    [self AddObject:objName newObject:newObj isDynamic:true];
+}
+
+- (void)createPaddleBody {
+    struct PhysicsObject *newObj = new struct PhysicsObject;
+    
+    newObj = new struct PhysicsObject;
+    newObj->loc.x = PADDLE_POS_X;
+    newObj->loc.y = PADDLE_POS_Y;
+    newObj->objType = ObjTypePaddle;
+    char* objName = strdup("Paddle");
+    [self AddObject:objName newObject:newObj isDynamic:false];
+
 }
 
 - (void)createWallBodies {
@@ -144,14 +156,14 @@ public:
     newObj->loc.y = WALL_POS_Y;
     newObj->objType = ObjTypeWall;
     char* objName = strdup("Wall_left");
-    [self AddObject:objName newObject:newObj];
+    [self AddObject:objName newObject:newObj isDynamic:false];
 
     newObj = new struct PhysicsObject;
     newObj->loc.x = WALL_RIGHT_POX_X;
     newObj->loc.y = WALL_POS_Y;
     newObj->objType = ObjTypeWall;
     objName = strdup("Wall_right");
-    [self AddObject:objName newObject:newObj];
+    [self AddObject:objName newObject:newObj isDynamic:false];
     
     newObj = new struct PhysicsObject;
     newObj->loc.x = WALL_LEFT_POS_X;
@@ -159,7 +171,7 @@ public:
     newObj->loc.theta = M_PI/2;
     newObj->objType = ObjTypeWall;
     objName = strdup("Wall_top");
-    [self AddObject:objName newObject:newObj];
+    [self AddObject:objName newObject:newObj isDynamic:false];
 }
 
 - (void)dealloc
@@ -175,7 +187,7 @@ public:
 {
     
     // Get pointers to the brick and ball physics objects
-    struct PhysicsObject *theBrick = physicsObjects[std::string("Brick")];
+    //struct PhysicsObject *theBrick = physicsObjects[std::string("Brick")];
     struct PhysicsObject *theBall = physicsObjects["Ball"];
     
     // Check here if we need to launch the ball
@@ -222,10 +234,10 @@ public:
 //        ((b2Body *)theBall->b2ShapePtr)->SetActive(false);
         
         // Destroy the brick from Box2D and related objects in this class
-        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
-        delete theBrick;
-        theBrick = nullptr;
-        physicsObjects.erase("Brick");
+//        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
+//        delete theBrick;
+//        theBrick = nullptr;
+//        physicsObjects.erase("Brick");
         ballHitBrick = false;   // until a reset and re-launch
         
     }
@@ -269,13 +281,13 @@ public:
     ballLaunched = true;
 }
 
--(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj
+-(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic
 {
     
     // Set up the body definition and create the body from it
     b2BodyDef bodyDef;
     b2Body *theObject;
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = isDynamic ? b2_dynamicBody: b2_staticBody;
     bodyDef.position.Set(newObj->loc.x, newObj->loc.y);
     bodyDef.angle = newObj->loc.theta;
     theObject = world->CreateBody(&bodyDef);
@@ -307,7 +319,6 @@ public:
             break;
             
         case ObjTypeCircle:
-            
             circle.m_radius = BALL_RADIUS;
             fixtureDef.shape = &circle;
             fixtureDef.density = 1.0f;
@@ -319,6 +330,16 @@ public:
         case ObjTypeWall:
             
             dynamicBox.SetAsBox(WALL_WIDTH/2, WALL_HEIGHT/2);
+            fixtureDef.shape = &dynamicBox;
+            fixtureDef.density = 1.0f;
+            fixtureDef.friction = 0.3f;
+            fixtureDef.restitution = 1.0f;
+                        
+            break;
+            
+        case ObjTypePaddle:
+            
+            dynamicBox.SetAsBox(PADDLE_WIDTH/2, PADDLE_HEIGHT/2);
             fixtureDef.shape = &dynamicBox;
             fixtureDef.density = 1.0f;
             fixtureDef.friction = 0.3f;
@@ -361,7 +382,7 @@ public:
     theBrick->loc.y = BRICK_POS_Y;
     theBrick->objType = ObjTypeBox;
     char *objName = strdup("Brick");
-    [self AddObject:objName newObject:theBrick];
+    [self AddObject:objName newObject:theBrick isDynamic:false];
     
     // Look up the ball object and re-initialize the position, etc.
     struct PhysicsObject *theBall = physicsObjects["Ball"];
@@ -377,6 +398,12 @@ public:
     ballHitBrick = false;
     ballLaunched = false;
     
+}
+
+- (void)UpdatePaddle:(const float)pos {
+    struct PhysicsObject *paddle = physicsObjects["Paddle"];
+    float oldPos = paddle->loc.x;
+    ((b2Body *)paddle->b2ShapePtr)->SetTransform(b2Vec2(oldPos + pos, 0), 0);
 }
 
 @end

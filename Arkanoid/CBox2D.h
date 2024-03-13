@@ -30,8 +30,8 @@
 #define BALL_VELOCITY   1000.0f
 #define PADDLE_WIDTH    12.0f
 #define PADDLE_HEIGHT   1.5f
-#define PADDLE_POS_X    -5
-#define PADDLE_POS_Y    5
+#define PADDLE_POS_X    0
+#define PADDLE_POS_Y    0
 #define WALL_WIDTH      1.0f
 #define WALL_HEIGHT     200.0f
 #define WALL_POS_Y      100.0f
@@ -39,7 +39,7 @@
 #define WALL_RIGHT_POX_X 30.0f
 
 // You can define other object types here
-typedef enum { ObjTypeBox=0, ObjTypeCircle=1, ObjTypeWall=3 } ObjectType;
+typedef enum { ObjTypeBox=0, ObjTypeCircle=1, ObjTypeWall=3 , ObjTypePaddle=4} ObjectType;
 
 
 // Location of each object in our physics world
@@ -63,11 +63,13 @@ struct PhysicsObject {
 -(void) LaunchBall;                                                         // launch the ball
 -(void) Update:(float)elapsedTime;                                          // update the Box2D engine
 -(void) RegisterHit;                                                        // Register when the ball hits the brick
--(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj;    // Add a new physics object
+-(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic;    // Add a new physics object
 -(struct PhysicsObject *) GetObject:(const char *)name;                     // Get a physics object by name
+-(void) UpdatePaddle:(const float) pos;
 -(void) Reset;                                                              // Reset Box2D
 -(void)createBallBody;
 
+-(void)createPaddleBody;
 -(void)createWallBodies;
 
 @end
