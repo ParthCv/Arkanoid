@@ -8,7 +8,7 @@
 import SceneKit
 import SwiftUI
 
-class Arkanoid: SCNScene {
+class Arkanoid: SCNScene, ObservableObject {
 
     var ballNode: SCNNode = SCNNode()
     
@@ -22,11 +22,22 @@ class Arkanoid: SCNScene {
     
     var lastTime = CFTimeInterval(floatLiteral: 0)
     
-    var score = 0
-    
     var ballsLeft = 5
+    
+//    @Published var scoreMngr = ScoreManager()
         
+    @Published var score = 0
+    
+    func incrementScore(){
+        DispatchQueue.main.async {
+            self.score += 100
+            print(String(self.score))
+        }
+        
+    }
+    
     override init() {
+//        self.scoreMngr = ScoreManager()
         super.init()
         
         for _ in 1...BRICK_ROWS {
@@ -193,5 +204,4 @@ class Arkanoid: SCNScene {
     func resetBall(){
         box2DWrapper.reset()
     }
-    
 }
