@@ -59,10 +59,11 @@ public:
             //void* b2 = (objData->b2ShapePtr);
             
             char *name = ((char *)bodyA->GetUserData());
-        
             
-            // Call RegisterHit (assume CBox2D object is in user data)
-            [parentObj RegisterHit:name];    // assumes RegisterHit is a callback function to register collision
+            if (objData->objType == ObjTypeBox) {
+                // Call RegisterHit (assume CBox2D object is in user data)
+                [parentObj RegisterHit:name];    // assumes RegisterHit is a callback function to register collision
+            }
             
         }
         
@@ -91,6 +92,8 @@ public:
     bool ballHitBrick;  // register that the ball hit the break
     bool ballLaunched;  // register that the user has launched the ball
     
+    PhysicsObject* objectToBeDeleted;
+    
 }
 @end
 
@@ -112,6 +115,7 @@ public:
         totalElapsedTime = 0;
         ballHitBrick = false;
         ballLaunched = false;
+        objectToBeDeleted = nil;
     }
     
     return self;
@@ -255,6 +259,12 @@ public:
         
     }
     
+    if (objectToBeDeleted != nil) {
+        ((b2Body *)objectToBeDeleted->b2ShapePtr)->SetAwake(false);
+        ((b2Body *)objectToBeDeleted->b2ShapePtr)->SetActive(false);
+        objectToBeDeleted = nil;
+    }
+    
     // Update each node based on the new position from Box2D
     for (auto const &b:physicsObjects) {
         if (b.second && b.second->b2ShapePtr) {
@@ -270,24 +280,15 @@ public:
     //TODO: not registing hit rn
     // Set some flag here for processing later...
     ballHitBrick = false;
-    char *type = std::strtok(objName, "_");
 
-    if (strcmp(type, "Brick") == 0) {
-        char row = *(objName + 6);
-        printf("%c\n", row);
-        
-        char col = *(objName + 8);
-        printf("%c\n", col);
-        
-        struct PhysicsObject *brick = physicsObjects[objName];
-        if (brick) {
-            printf("Brick");
-            ((b2Body *)brick->b2ShapePtr)->SetAwake(false);
-            ((b2Body *)brick->b2ShapePtr)->SetActive(false);
-        }
-        
-        
-    }
+    char row = *(objName + 6);
+    //printf("%c\n", row);
+    
+    char col = *(objName + 8);
+    //printf("%c\n", col);
+    
+    objectToBeDeleted = physicsObjects[objName];
+    physicsObjects.erase(objName);
 }
 
 -(void)LaunchBall

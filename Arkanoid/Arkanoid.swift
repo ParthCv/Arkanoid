@@ -84,6 +84,15 @@ class Arkanoid: SCNScene {
             resetBall()
         }
         
+        for i in 0..<BRICK_ROWS {
+            for j in 0..<BRICK_COLS {
+                let brick = UnsafePointer(box2DWrapper.getObject("Brick_\(j)_\(i)"))
+                if brick == nil {
+                    brickNodes[Int(i)][Int(j)].isHidden = true
+                }
+            }
+        }
+        
         let paddlePos = UnsafePointer(box2DWrapper.getObject("Paddle"))
         paddleNode.position.x = (paddlePos?.pointee.loc.x)!
         paddleNode.position.y = (paddlePos?.pointee.loc.y)!
