@@ -64,8 +64,8 @@ struct PhysicsObject {
 @interface CBox2D : NSObject
 -(void) LaunchBall;                                                         // launch the ball
 -(void) Update:(float)elapsedTime;                                          // update the Box2D engine
--(void) RegisterHit;                                                        // Register when the ball hits the brick
--(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic;    // Add a new physics object
+-(void) RegisterHit:(char *)objName;                                     // Register when the ball hits the brick
+-(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic userData:(char *)userData;    // Add a new physics object
 -(struct PhysicsObject *) GetObject:(const char *)name;                     // Get a physics object by name
 -(void) UpdatePaddle:(const float) pos;
 -(void) Reset;                                                              // Reset Box2D

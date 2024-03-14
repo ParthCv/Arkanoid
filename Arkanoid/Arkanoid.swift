@@ -84,6 +84,15 @@ class Arkanoid: SCNScene {
             resetBall()
         }
         
+        for i in 0..<BRICK_ROWS {
+            for j in 0..<BRICK_COLS {
+                let brick = UnsafePointer(box2DWrapper.getObject("Brick_\(j)_\(i)"))
+                if brick == nil {
+                    brickNodes[Int(i)][Int(j)].isHidden = true
+                }
+            }
+        }
+        
         let paddlePos = UnsafePointer(box2DWrapper.getObject("Paddle"))
         paddleNode.position.x = (paddlePos?.pointee.loc.x)!
         paddleNode.position.y = (paddlePos?.pointee.loc.y)!
@@ -142,9 +151,9 @@ class Arkanoid: SCNScene {
                     Float(row) * (BRICK_HEIGHT + BRICK_SPACING) + Float(BRICK_POS_Y),
                     0
                 )
-                let objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
-                brickNode.name = "Brick_\(row)_\(col)"
-                box2DWrapper.createBrick(row, andCol: col, andName: objName)
+                var objName = "Brick_\(row)_\(col)"
+                brickNode.name = objName
+                box2DWrapper.createBrick(row, andCol: col, andName: &objName)
                 self.rootNode.addChildNode(brickNode)
                 brickNodes[Int(row)][Int(col)] = brickNode
             }
