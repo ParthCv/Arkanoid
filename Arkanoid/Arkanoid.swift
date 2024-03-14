@@ -22,8 +22,6 @@ class Arkanoid: SCNScene {
     
     var lastTime = CFTimeInterval(floatLiteral: 0)
     
-    var score = 0
-    
     var ballsLeft = 5
         
     override init() {
@@ -184,5 +182,4 @@ class Arkanoid: SCNScene {
     func resetBall(){
         box2DWrapper.reset()
     }
-    
 }
