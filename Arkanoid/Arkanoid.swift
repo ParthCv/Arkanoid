@@ -142,9 +142,9 @@ class Arkanoid: SCNScene {
                     Float(row) * (BRICK_HEIGHT + BRICK_SPACING) + Float(BRICK_POS_Y),
                     0
                 )
-                let objName = UnsafeMutablePointer<CChar>(mutating: "Brick_\(row)_\(col)")
-                brickNode.name = "Brick_\(row)_\(col)"
-                box2DWrapper.createBrick(row, andCol: col, andName: objName)
+                var objName = "Brick_\(row)_\(col)"
+                brickNode.name = objName
+                box2DWrapper.createBrick(row, andCol: col, andName: &objName)
                 self.rootNode.addChildNode(brickNode)
                 brickNodes[Int(row)][Int(col)] = brickNode
             }

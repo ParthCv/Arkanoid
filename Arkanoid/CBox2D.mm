@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <map>
 #include <string>
+#include <cstring>
 #include <math.h>
 
 
@@ -44,17 +45,24 @@ public:
         {
             
             // Use contact->GetFixtureA()->GetBody() to get the body that was hit
-            b2Body* bodyA = contact->GetFixtureA()->GetBody();
+            b2Fixture* bodyA = contact->GetFixtureA();
+            
+            //bodyA->m_userData;
             
             // Get the PhysicsObject as the user data, and then the CBox2D object in that struct
             // This is needed because this handler may be running in a different thread and this
             //  class does not know about the CBox2D that's running the physics
-            struct PhysicsObject *objData = (struct PhysicsObject *)(bodyA->GetUserData());
+            struct PhysicsObject *objData = (struct PhysicsObject *)(bodyA->GetBody()->GetUserData());
             
             CBox2D *parentObj = (__bridge CBox2D *)(objData->box2DObj);
+            b2Body *shapePtr = ((b2Body *)objData->b2ShapePtr);
+            //void* b2 = (objData->b2ShapePtr);
+            
+            char *name = ((char *)bodyA->GetUserData());
+        
             
             // Call RegisterHit (assume CBox2D object is in user data)
-            [parentObj RegisterHit];    // assumes RegisterHit is a callback function to register collision
+            [parentObj RegisterHit:name];    // assumes RegisterHit is a callback function to register collision
             
         }
         
@@ -117,7 +125,7 @@ public:
     newObj->loc.y = BALL_POS_Y;
     newObj->objType = ObjTypeCircle;
     char* objName = strdup("Ball");
-    [self AddObject:objName newObject:newObj isDynamic:true];
+    [self AddObject:objName newObject:newObj isDynamic:true userData:objName];
 }
 
 - (void)createPaddleBody {
@@ -128,7 +136,7 @@ public:
     newObj->loc.y = PADDLE_POS_Y;
     newObj->objType = ObjTypePaddle;
     char* objName = strdup("Paddle");
-    [self AddObject:objName newObject:newObj isDynamic:false];
+    [self AddObject:objName newObject:newObj isDynamic:false userData:objName];
 
 }
 
@@ -140,14 +148,14 @@ public:
     newObj->loc.y = WALL_POS_Y;
     newObj->objType = ObjTypeWall;
     char* objName = strdup("Wall_left");
-    [self AddObject:objName newObject:newObj isDynamic:false];
+    [self AddObject:objName newObject:newObj isDynamic:false userData:objName];
 
     newObj = new struct PhysicsObject;
     newObj->loc.x = WALL_RIGHT_POX_X;
     newObj->loc.y = WALL_POS_Y;
     newObj->objType = ObjTypeWall;
     objName = strdup("Wall_right");
-    [self AddObject:objName newObject:newObj isDynamic:false];
+    [self AddObject:objName newObject:newObj isDynamic:false userData:objName];
     
     newObj = new struct PhysicsObject;
     newObj->loc.x = WALL_LEFT_POS_X;
@@ -155,7 +163,7 @@ public:
     newObj->loc.theta = M_PI/2;
     newObj->objType = ObjTypeWall;
     objName = strdup("Wall_top");
-    [self AddObject:objName newObject:newObj isDynamic:false];
+    [self AddObject:objName newObject:newObj isDynamic:false userData:objName];
 }
 
 - (void)createBrick:(int)row andCol:(int)col andName:(char *)name {
@@ -164,7 +172,8 @@ public:
     newObj->loc.x = row * (BRICK_WIDTH + BRICK_SPACING) + BRICK_POS_X;
     newObj->loc.y = col * (BRICK_HEIGHT + BRICK_SPACING) + BRICK_POS_Y;
     newObj->objType = ObjTypeBox;
-    [self AddObject:name newObject:newObj isDynamic:false];
+    char * objName = strdup(name);
+    [self AddObject:objName newObject:newObj isDynamic:false userData:objName];
 }
 
 - (void)dealloc
@@ -256,11 +265,29 @@ public:
     
 }
 
--(void)RegisterHit
+-(void)RegisterHit:(char *)objName
 {
     //TODO: not registing hit rn
     // Set some flag here for processing later...
     ballHitBrick = false;
+    char *type = std::strtok(objName, "_");
+
+    if (strcmp(type, "Brick") == 0) {
+        char row = *(objName + 6);
+        printf("%c\n", row);
+        
+        char col = *(objName + 8);
+        printf("%c\n", col);
+        
+        struct PhysicsObject *brick = physicsObjects[objName];
+        if (brick) {
+            printf("Brick");
+            ((b2Body *)brick->b2ShapePtr)->SetAwake(false);
+            ((b2Body *)brick->b2ShapePtr)->SetActive(false);
+        }
+        
+        
+    }
 }
 
 -(void)LaunchBall
@@ -269,7 +296,7 @@ public:
     ballLaunched = true;
 }
 
--(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic
+-(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic userData:(char *)userData
 {
     
     // Set up the body definition and create the body from it
@@ -294,7 +321,7 @@ public:
     b2CircleShape circle;
     b2FixtureDef fixtureDef;
     b2PolygonShape polygon;
-    b2Vec2 verticies[4];
+    b2Vec2 verticies[8];
     
     switch (newObj->objType) {
             
@@ -330,8 +357,12 @@ public:
             
             verticies[0].Set(-PADDLE_WIDTH/2, -PADDLE_HEIGHT/2);
             verticies[1].Set(PADDLE_WIDTH/2, -PADDLE_HEIGHT/2);
-            verticies[2].Set(-PADDLE_WIDTH/3, PADDLE_HEIGHT/2);
-            verticies[3].Set(PADDLE_WIDTH/3, PADDLE_HEIGHT/2);
+            verticies[2].Set(-PADDLE_WIDTH/4, PADDLE_HEIGHT/2);
+            verticies[3].Set(PADDLE_WIDTH/4, PADDLE_HEIGHT/2);
+            verticies[4].Set(-PADDLE_WIDTH/16, PADDLE_HEIGHT/2);
+            verticies[5].Set(PADDLE_WIDTH/16, PADDLE_HEIGHT/2);
+            verticies[4].Set(-PADDLE_WIDTH/32, PADDLE_HEIGHT);
+            verticies[5].Set(PADDLE_WIDTH/32, PADDLE_HEIGHT);
             polygon.Set(verticies, 4);
             
             fixtureDef.shape = &polygon;
@@ -344,6 +375,7 @@ public:
             break;
             
     }
+    fixtureDef.userData = userData;
     theObject->SetGravityScale(0.0f);
     // Add the new fixture to the Box2D object and add our physics object to our map
     theObject->CreateFixture(&fixtureDef);
