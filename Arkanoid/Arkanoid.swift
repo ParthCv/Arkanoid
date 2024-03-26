@@ -29,23 +29,9 @@ class Arkanoid: SCNScene, ObservableObject {
     override init() {
         
         super.init()
-        /*
-         for _ in 1...BRICK_ROWS {
-         var row = [SCNNode]()
-         for _ in 1...BRICK_COLS {
-         row.append(SCNNode())
-         }
-         brickNodes.append(row)
-         }*/
-        
-        buildGame()
         
         box2DWrapper = CBox2D()
-        createCamera()
-        createWalls()
-        createBricks()
-        createPaddle()
-        createBallNode()
+        buildGame()
         
         let gameLoop = CADisplayLink(target: self, selector: #selector(update))
         gameLoop.preferredFrameRateRange = CAFrameRateRange(minimum: 120.0, maximum: 120.0, preferred: 120.0)
@@ -83,6 +69,7 @@ class Arkanoid: SCNScene, ObservableObject {
             if ballsLeft == 0 {
                 print("Game Over!")
                 print("Total score was:  \(score)")
+                resetGame()
             }
             resetBall()
         }
@@ -193,7 +180,7 @@ class Arkanoid: SCNScene, ObservableObject {
         box2DWrapper.updatePaddle(newXPos)
     }
     
-  //  @MainActor
+    //  @MainActor
     func resetBall(){
         box2DWrapper.reset()
     }
@@ -215,13 +202,20 @@ class Arkanoid: SCNScene, ObservableObject {
             }
             brickNodes.append(row)
         }
+        createCamera()
+        createWalls()
+        createBricks()
+        createPaddle()
+        createBallNode()
     }
     
+    @MainActor
     func resetGame(){
-        
-        // destroy the blocks
+        box2DWrapper.resetGame()
+        brickNodes.removeAll()
+        ballNode.removeFromParentNode()
+        paddleNode.removeFromParentNode()
         buildGame()
-        resetBall()
         score = 0
         ballsLeft = 5
     }

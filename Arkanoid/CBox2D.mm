@@ -190,55 +190,16 @@ public:
 -(void)Update:(float)elapsedTime
 {
     
-    // Get pointers to the brick and ball physics objects
-    //struct PhysicsObject *theBrick = physicsObjects[std::string("Brick")];
+    // Get pointers to the ball physics objects
     struct PhysicsObject *theBall = physicsObjects["Ball"];
     
-    // Check here if we need to launch the ball
-    //  and if so, use ApplyLinearImpulse() and SetActive(true)
-    if (ballLaunched)
-    {
-        
-        // Apply a force (since the ball is set up not to be affected by gravity)
-        ((b2Body *)theBall->b2ShapePtr)->ApplyLinearImpulse(b2Vec2(0, BALL_VELOCITY),
-                                                            ((b2Body *)theBall->b2ShapePtr)->GetPosition(),
-                                                            true);
-        ((b2Body *)theBall->b2ShapePtr)->SetActive(true);
-        ballLaunched = false;
-        
-    }
-    
     // Check if it is time yet to drop the brick, and if so call SetAwake()
-    totalElapsedTime += elapsedTime;
-//    if ((totalElapsedTime > BRICK_WAIT) && theBrick && theBrick->b2ShapePtr) {
-//        ((b2Body *)theBrick->b2ShapePtr)->SetAwake(true);
-//    }
-    
-     
-
-//        if (theBall &&  theBall->b2ShapePtr)
-//            printf("Ball: %4.2f %4.2f",
-//                   ((b2Body *)theBall->b2ShapePtr)->GetPosition().x,
-//                   ((b2Body *)theBall->b2ShapePtr)->GetPosition().y);
-//        printf("\n");
-    
-    
+    totalElapsedTime += elapsedTime;   
     
     // If the last collision test was positive, stop the ball and destroy the brick
     if (ballHitBrick)
     {
         
-        // TODO: Reflect ball on Wall or Brick
-//        ((b2Body *)theBall->b2ShapePtr)->SetLinearVelocity(b2Vec2(0, 0));
-//        ((b2Body *)theBall->b2ShapePtr)->SetAngularVelocity(0);
-//        ((b2Body *)theBall->b2ShapePtr)->SetAwake(false);
-//        ((b2Body *)theBall->b2ShapePtr)->SetActive(false);
-        
-        // Destroy the brick from Box2D and related objects in this class
-//        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
-//        delete theBrick;
-//        theBrick = nullptr;
-//        physicsObjects.erase("Brick");
         ballHitBrick = false;   // until a reset and re-launch
         
     }
@@ -277,15 +238,8 @@ public:
 
 -(void)RegisterHit:(char *)objName
 {
-    //TODO: not registing hit rn
     // Set some flag here for processing later...
     ballHitBrick = false;
-
-    char row = *(objName + 6);
-    //printf("%c\n", row);
-    
-    char col = *(objName + 8);
-    //printf("%c\n", col);
     
     objectToBeDeleted = physicsObjects[objName];
     physicsObjects.erase(objName);
@@ -293,8 +247,20 @@ public:
 
 -(void)LaunchBall
 {
-    // Set some flag here for processing later...
-    ballLaunched = true;
+    // Check here if we need to launch the ball
+    //  and if so, use ApplyLinearImpulse() and SetActive(true)
+    if (!ballLaunched)
+    {
+        struct PhysicsObject *theBall = physicsObjects["Ball"];
+        // Apply a force (since the ball is set up not to be affected by gravity)
+        ((b2Body *)theBall->b2ShapePtr)->ApplyLinearImpulse(b2Vec2(0, BALL_VELOCITY),
+                                                            ((b2Body *)theBall->b2ShapePtr)->GetPosition(),
+                                                            true);
+        ((b2Body *)theBall->b2ShapePtr)->SetActive(true);
+
+        // Set some flag here for processing later...
+        ballLaunched = true;
+    }
 }
 
 -(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic userData:(char *)userData
@@ -391,24 +357,6 @@ public:
 
 -(void)Reset
 {
-    
-//    // Look up the brick, and if it exists, destroy it and delete it
-//    struct PhysicsObject *theBrick = physicsObjects["Brick"];
-//    if (theBrick) {
-//        world->DestroyBody(((b2Body *)theBrick->b2ShapePtr));
-//        delete theBrick;
-//        theBrick = nullptr;
-//        physicsObjects.erase("Brick");
-//    }
-//    
-//    // Create a new brick object
-//    theBrick = new struct PhysicsObject;
-//    theBrick->loc.x = BRICK_POS_X;
-//    theBrick->loc.y = BRICK_POS_Y;
-//    theBrick->objType = ObjTypeBox;
-//    char *objName = strdup("Brick");
-//    [self AddObject:objName newObject:theBrick isDynamic:false];
-//    
     // Look up the ball object and re-initialize the position, etc.
     struct PhysicsObject *theBall = physicsObjects["Ball"];
     theBall->loc.x = BALL_POS_X;
@@ -428,6 +376,14 @@ public:
     ballHitBrick = false;
     ballLaunched = false;
     
+}
+
+- (void) ResetGame{
+    physicsObjects.clear();
+    
+    totalElapsedTime = 0;
+    ballHitBrick = false;
+    ballLaunched = false;
 }
 
 - (void)UpdatePaddle:(const float)pos {

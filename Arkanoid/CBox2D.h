@@ -68,7 +68,8 @@ struct PhysicsObject {
 -(void) AddObject:(char *)name newObject:(struct PhysicsObject *)newObj isDynamic:(bool)isDynamic userData:(char *)userData;    // Add a new physics object
 -(struct PhysicsObject *) GetObject:(const char *)name;                     // Get a physics object by name
 -(void) UpdatePaddle:(const float) pos;
--(void) Reset;                                                              // Reset Box2D
+-(void) Reset;  
+-(void) ResetGame; 
 -(void)createBallBody;
 -(void)createPaddleBody;
 -(void)createWallBodies;
