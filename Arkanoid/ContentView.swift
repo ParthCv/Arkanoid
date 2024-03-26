@@ -14,6 +14,8 @@ struct ContentView: View {
     var body: some View {
         // sets a state variable to change whenever the score manager's score changes
         @State var scoreToPost = scene.score
+        @State var ballsLeft = scene.ballsLeft
+        
         SceneView(scene: scene, pointOfView: scene.cameraNode)
             .onTapGesture(count: 2, perform: {
                 scene.box2DWrapper.launchBall()
@@ -25,9 +27,9 @@ struct ContentView: View {
             )
         HStack{
             Text("Score: \(scoreToPost)")
-            Button(action: {scene.incrementScore()}){
-                Text("Increment Score")
-            }.padding()
+                .padding()
+            Text("Balls Left: \(ballsLeft)")
+                .padding()
         }
     }
 }
