@@ -28,14 +28,6 @@ class Arkanoid: SCNScene, ObservableObject {
         
     @Published var score = 0
     
-    func incrementScore(){
-        DispatchQueue.main.async {
-            self.score += 100
-            print(String(self.score))
-        }
-        
-    }
-    
     override init() {
 //        self.scoreMngr = ScoreManager()
         super.init()
@@ -196,12 +188,21 @@ class Arkanoid: SCNScene, ObservableObject {
     
     @MainActor
     func handlePaddleMovement(offset: CGSize) {
-        let newXPos = Float(offset.width) / 100        
+        let newXPos = Float(offset.width) * 0.005
         box2DWrapper.updatePaddle(newXPos)
     }
 
     @MainActor
     func resetBall(){
         box2DWrapper.reset()
+    }
+    
+    @MainActor
+    func incrementScore(){
+        DispatchQueue.main.async {
+            self.score += 100
+            print(String(self.score))
+        }
+        
     }
 }

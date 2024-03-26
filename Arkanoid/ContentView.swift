@@ -20,7 +20,7 @@ struct ContentView: View {
             })
             .gesture(
                 DragGesture().onChanged({ gesture in
-                    scene.handlePaddleMovement(offset: gesture.translation)
+                    scene.handlePaddleMovement(offset: gesture.velocity)
                 })
             )
         HStack{
