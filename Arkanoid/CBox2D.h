@@ -25,7 +25,7 @@
 #define BRICK_HEIGHT    2.0f
 #define BRICK_WAIT      1.0f
 #define BALL_POS_X      0
-#define BALL_POS_Y      5
+#define BALL_POS_Y      10
 #define BALL_RADIUS     2.0f
 #define BALL_VELOCITY   1000.0f
 #define PADDLE_WIDTH    12.0f
@@ -33,8 +33,8 @@
 #define PADDLE_POS_X    0
 #define PADDLE_POS_Y    0
 #define WALL_WIDTH      1.0f
-#define WALL_HEIGHT     200.0f
-#define WALL_POS_Y      100.0f
+#define WALL_HEIGHT     300.0f
+#define WALL_POS_Y      105.0f
 #define WALL_LEFT_POS_X -30.0f
 #define WALL_RIGHT_POX_X 30.0f
 #define KILL_ZONE       -20.0f

@@ -253,7 +253,7 @@ public:
     {
         struct PhysicsObject *theBall = physicsObjects["Ball"];
         // Apply a force (since the ball is set up not to be affected by gravity)
-        ((b2Body *)theBall->b2ShapePtr)->ApplyLinearImpulse(b2Vec2(0, BALL_VELOCITY),
+        ((b2Body *)theBall->b2ShapePtr)->ApplyLinearImpulse(b2Vec2(0, -BALL_VELOCITY),
                                                             ((b2Body *)theBall->b2ShapePtr)->GetPosition(),
                                                             true);
         ((b2Body *)theBall->b2ShapePtr)->SetActive(true);

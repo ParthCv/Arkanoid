@@ -63,17 +63,6 @@ class Arkanoid: SCNScene, ObservableObject {
         ballNode.position.x = (ballPos?.pointee.loc.x)!
         ballNode.position.y = (ballPos?.pointee.loc.y)!
         
-        // Check y pos of ball
-        if(ballNode.position.y < KILL_ZONE){
-            ballsLeft = ballsLeft - 1
-            if ballsLeft == 0 {
-                print("Game Over!")
-                print("Total score was:  \(score)")
-                resetGame()
-            }
-            resetBall()
-        }
-        
         for i in 0..<BRICK_ROWS {
             for j in 0..<BRICK_COLS {
                 let brick = UnsafePointer(box2DWrapper.getObject("Brick_\(j)_\(i)"))
@@ -87,6 +76,17 @@ class Arkanoid: SCNScene, ObservableObject {
         let paddlePos = UnsafePointer(box2DWrapper.getObject("Paddle"))
         paddleNode.position.x = (paddlePos?.pointee.loc.x)!
         paddleNode.position.y = (paddlePos?.pointee.loc.y)!
+        
+        // Check y pos of ball
+        if(ballNode.position.y < KILL_ZONE){
+            ballsLeft = ballsLeft - 1
+            if ballsLeft == 0 {
+                print("Game Over!")
+                print("Total score was:  \(score)")
+                resetGame()
+            }
+            resetBall()
+        }
     }
     
     
@@ -153,7 +153,7 @@ class Arkanoid: SCNScene, ObservableObject {
     }
     
     func createWalls(){
-        let wallGeo = SCNBox(width: 1.0, height:200.0, length: 0.1, chamferRadius: 0.0)
+        let wallGeo = SCNBox(width: CGFloat(WALL_WIDTH), height:CGFloat(WALL_HEIGHT), length: 0.1, chamferRadius: 0.0)
         let wallMat = SCNMaterial()
         wallMat.diffuse.contents = UIColor.brown
         wallGeo.materials = [wallMat]
@@ -162,9 +162,9 @@ class Arkanoid: SCNScene, ObservableObject {
         let wallRight = SCNNode(geometry: wallGeo)
         let wallTop = SCNNode(geometry: wallGeo)
         
-        wallLeft.position = SCNVector3(-30, 100,0)
-        wallRight.position = SCNVector3(30, 100,0)
-        wallTop.position = SCNVector3(-30, 100,0)
+        wallLeft.position = SCNVector3(WALL_LEFT_POS_X, WALL_POS_Y, 0)
+        wallRight.position = SCNVector3(WALL_RIGHT_POX_X, WALL_POS_Y, 0)
+        wallTop.position = SCNVector3(WALL_LEFT_POS_X, WALL_POS_Y, 0)
         wallTop.eulerAngles = SCNVector3(0,0,Float.pi/2)
         
         box2DWrapper.createWallBodies()
@@ -212,6 +212,12 @@ class Arkanoid: SCNScene, ObservableObject {
     @MainActor
     func resetGame(){
         box2DWrapper.resetGame()
+        for row in 0..<BRICK_ROWS {
+            for col in 0..<BRICK_COLS {
+                brickNodes[Int(row)][Int(col)].removeFromParentNode()
+            }
+            
+        }
         brickNodes.removeAll()
         ballNode.removeFromParentNode()
         paddleNode.removeFromParentNode()
