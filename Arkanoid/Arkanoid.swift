@@ -9,7 +9,7 @@ import SceneKit
 import SwiftUI
 
 class Arkanoid: SCNScene, ObservableObject {
-
+    
     var ballNode: SCNNode = SCNNode()
     
     var cameraNode : SCNNode = SCNNode()
@@ -22,23 +22,23 @@ class Arkanoid: SCNScene, ObservableObject {
     
     var lastTime = CFTimeInterval(floatLiteral: 0)
     
-    var ballsLeft = 5
+    @Published var ballsLeft = 5
     
-//    @Published var scoreMngr = ScoreManager()
-        
     @Published var score = 0
     
     override init() {
-//        self.scoreMngr = ScoreManager()
-        super.init()
         
-        for _ in 1...BRICK_ROWS {
-            var row = [SCNNode]()
-            for _ in 1...BRICK_COLS {
-                row.append(SCNNode())
-            }
-            brickNodes.append(row)
-        }
+        super.init()
+        /*
+         for _ in 1...BRICK_ROWS {
+         var row = [SCNNode]()
+         for _ in 1...BRICK_COLS {
+         row.append(SCNNode())
+         }
+         brickNodes.append(row)
+         }*/
+        
+        buildGame()
         
         box2DWrapper = CBox2D()
         createCamera()
@@ -73,7 +73,7 @@ class Arkanoid: SCNScene, ObservableObject {
         
         // Get ball position and update ball node
         let ballPos = UnsafePointer(box2DWrapper.getObject("Ball"))
-    
+        
         ballNode.position.x = (ballPos?.pointee.loc.x)!
         ballNode.position.y = (ballPos?.pointee.loc.y)!
         
@@ -81,17 +81,18 @@ class Arkanoid: SCNScene, ObservableObject {
         if(ballNode.position.y < KILL_ZONE){
             ballsLeft = ballsLeft - 1
             if ballsLeft == 0 {
-                print("Game Over")
+                print("Game Over!")
+                print("Total score was:  \(score)")
             }
-            print("Balls Left ", ballsLeft)
             resetBall()
         }
         
         for i in 0..<BRICK_ROWS {
             for j in 0..<BRICK_COLS {
                 let brick = UnsafePointer(box2DWrapper.getObject("Brick_\(j)_\(i)"))
-                if brick == nil {
+                if (brick == nil && !brickNodes[Int(i)][Int(j)].isHidden) {
                     brickNodes[Int(i)][Int(j)].isHidden = true
+                    incrementScore()
                 }
             }
         }
@@ -145,7 +146,7 @@ class Arkanoid: SCNScene, ObservableObject {
         let brickMat = SCNMaterial()
         brickMat.diffuse.contents = UIColor.green
         brickGeo.materials = [brickMat]
-                
+        
         for row in 0..<BRICK_ROWS {
             for col in 0..<BRICK_COLS {
                 let brickNode = SCNNode(geometry: brickGeo)
@@ -178,7 +179,7 @@ class Arkanoid: SCNScene, ObservableObject {
         wallRight.position = SCNVector3(30, 100,0)
         wallTop.position = SCNVector3(-30, 100,0)
         wallTop.eulerAngles = SCNVector3(0,0,Float.pi/2)
-
+        
         box2DWrapper.createWallBodies()
         
         self.rootNode.addChildNode(wallLeft)
@@ -191,8 +192,8 @@ class Arkanoid: SCNScene, ObservableObject {
         let newXPos = Float(offset.width) * 0.005
         box2DWrapper.updatePaddle(newXPos)
     }
-
-    @MainActor
+    
+  //  @MainActor
     func resetBall(){
         box2DWrapper.reset()
     }
@@ -201,8 +202,27 @@ class Arkanoid: SCNScene, ObservableObject {
     func incrementScore(){
         DispatchQueue.main.async {
             self.score += 100
-            print(String(self.score))
+            // print(String(self.score))
         }
         
+    }
+    
+    func buildGame(){
+        for _ in 1...BRICK_ROWS {
+            var row = [SCNNode]()
+            for _ in 1...BRICK_COLS {
+                row.append(SCNNode())
+            }
+            brickNodes.append(row)
+        }
+    }
+    
+    func resetGame(){
+        
+        // destroy the blocks
+        buildGame()
+        resetBall()
+        score = 0
+        ballsLeft = 5
     }
 }
